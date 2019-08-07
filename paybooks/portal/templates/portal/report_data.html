@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block content %}
+<h1> Hello {{user}} </h1>
+<p>Below work hours data is from {{week_begining|date:"F d, Y"}} to {{week_ending|date:"F d, Y"}} </p>
+
 	<table border="4">
 		<thead>
 			<tr>

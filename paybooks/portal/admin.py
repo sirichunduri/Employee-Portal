@@ -1,5 +1,10 @@
 from django.contrib import admin
+from portal.models import Timesheet
+import datetime,time
 
-from .models import Timesheet
 
-admin.site.register(Timesheet)
+class TimesheetAdmin(admin.ModelAdmin):
+	list_display = ('job', 'employee', 'date', 'hours',)
+	list_filter = ('date','hours','employee',)
+
+admin.site.register(Timesheet, TimesheetAdmin)
