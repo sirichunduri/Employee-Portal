@@ -6,10 +6,10 @@ import time
 import pytz
 
 
-class Timesheet(models.Model):
+class Timesheet(models.Model):	
 	job = models.CharField(max_length=100)
 	date = models.DateField('date')
-	time = models.DateTimeField(default=datetime.now(), blank=True)
+	time = models.DateTimeField(default=timezone.now)
 	employee = models.ForeignKey(User, on_delete=models.CASCADE)
 	hours = models.IntegerField()
 	

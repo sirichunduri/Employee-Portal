@@ -1,13 +1,18 @@
-from django.shortcuts import render,render_to_response
+from django.shortcuts import render,redirect,render_to_response
 import datetime,time
 from django.contrib.auth.models import User
 from .models import Timesheet
 from django.utils import timezone
 from django.http import Http404
 from django.db.models import Sum
+from .forms import add_data
+from django import forms
+
 
 def home(request):
 	return render(request,'portal/home.html')
+def saved_data(request):
+	return render(request,'portal/saved.html')
 
 def report_data(request,username,year,week):
 	try:
@@ -42,3 +47,15 @@ def report_data(request,username,year,week):
 	
 	}
 	return render(request,'portal/report_data.html',context)
+	
+def get_data(request):
+	if request.method == 'POST':
+		form=add_data(request.POST)
+		if form.is_valid():
+			a=form.save(commit=False)
+			a.employee=request.user
+			a.save()
+			return redirect('saved')
+	else:
+		form=add_data()
+	return render(request,'portal/add_data.html',{'form':form})
