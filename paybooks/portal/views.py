@@ -71,7 +71,5 @@ def post_name(request):
     if request.method == 'POST':
         form = addName(request.POST)
         if form.is_valid():
-            data = form.cleaned_data
-            name_obj = Name(**data)
-            name_obj.save()
+            form.save()
             return JsonResponse({'error': False, 'data': 'Success'},)

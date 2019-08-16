@@ -26,10 +26,9 @@
         $("#form").submit(function () {
             let data = $('#form').serialize();
             let url = $(this).attr('action');
-            alert("hi")
+
             $.post(url,data,function (resp) {
                 alert(resp.data);
-                
             });
             return false;
         });
