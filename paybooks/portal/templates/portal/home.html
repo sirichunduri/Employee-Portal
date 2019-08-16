@@ -5,4 +5,34 @@
 	{% else %}
 		<h1> Hi </h1>
 	{% endif %}
+    <form action="/savename/" method="post" id="form">
+    {% csrf_token %}
+    <div>
+        <label>
+            {{ form.First_name.label }}
+        </label>{{ form.First_name }}
+    </div>
+    <div>
+        <label>
+            {{ form.Last_name.label }}
+        </label>{{ form.Last_name }}
+    </div>
+    <button id="submit"> Submit </button>
+    </form>
 {% endblock content%}
+{% block js %}
+    <script>
+    $(function () {
+        $("#form").submit(function () {
+            let data = $('#form').serialize();
+            let url = $(this).attr('action');
+            alert("hi")
+            $.post(url,data,function (resp) {
+                alert(resp.data);
+                
+            });
+            return false;
+        });
+    })
+    </script>
+{% endblock js%}
