@@ -1,6 +1,6 @@
 from django import forms
 from .models import Timesheet
-from datetime import datetime
+import datetime
 
 class add_data(forms.ModelForm):
     date = forms.DateField()
@@ -17,6 +17,5 @@ class addName(forms.Form):
     Last_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 class reportData(forms.Form):
-    year = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), min_value=2000, max_value=datetime.now().year)
+    year = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), min_value=2000, max_value=datetime.date.today().year)
     week = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), min_value=1, max_value=52)
-

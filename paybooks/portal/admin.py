@@ -1,6 +1,5 @@
 from django.contrib import admin
 from portal.models import Timesheet
-import datetime,time
 
 
 class TimesheetAdmin(admin.ModelAdmin):

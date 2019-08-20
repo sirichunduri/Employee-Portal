@@ -1,12 +1,9 @@
 from django.shortcuts import render, redirect, render_to_response
-import datetime, time
+import time
 from django.contrib.auth.models import User
-from .models import Timesheet
-from django.utils import timezone
 from django.http import Http404, JsonResponse
 from django.db.models import Sum
 from .forms import *
-from django.forms.models import model_to_dict
 
 
 

@@ -3,7 +3,6 @@
 	{% if user.is_authenticated %}
         <div class="content-section">
 		<h1 id = 'fullName'> Hi {{name}} </h1>
-
         <p></p>
     <form action="/savename/" method="post" id="form">
     {% csrf_token %}
@@ -35,7 +34,6 @@
             let data = $('#form').serialize();
             let url = $(this).attr('action');
             $.post(url,data,function (resp) {
-                //alert(resp.data);
                 $('#form input[type="text"]').val(' ');
                 $('#fullName').text('Hello '+ resp.name);
                 console.log(resp.name)
