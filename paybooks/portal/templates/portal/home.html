@@ -1,37 +1,11 @@
 {% extends "portal/base.html" %}
 {% block content %}
+
 	{% if user.is_authenticated %}
 		<h1> Hello {{user}} </h1>
 	{% else %}
 		<h1> Hi </h1>
+        <p>  Getting started? Please <a href={% url 'login'%}> login </a>  </p>
 	{% endif %}
-    <form action="/savename/" method="post" id="form">
-    {% csrf_token %}
-    <div>
-        <label>
-            {{ form.First_name.label }}
-        </label>{{ form.First_name }}
-    </div>
-    <div>
-        <label>
-            {{ form.Last_name.label }}
-        </label>{{ form.Last_name }}
-    </div>
-    <button id="submit"> Submit </button>
-    </form>
-{% endblock content%}
-{% block js %}
-    <script>
-    $(function () {
-        $("#form").submit(function () {
-            let data = $('#form').serialize();
-            let url = $(this).attr('action');
 
-            $.post(url,data,function (resp) {
-                alert(resp.data);
-            });
-            return false;
-        });
-    })
-    </script>
-{% endblock js%}
+{% endblock content%}

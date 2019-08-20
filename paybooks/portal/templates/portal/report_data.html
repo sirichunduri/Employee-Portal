@@ -1,34 +1,77 @@
 {% extends "portal/base.html" %}
-
-{% block title %}{{ block.super }}: {{ user.get_full_name }} for {{ week_begining }}{% endblock %}
-
-{% block content_title %}
-	<h2>{{ user.get_full_name }} for {{ week_begining }}</h2>
-{% endblock %}
-
 {% block content %}
-<h1> Hello {{user}} </h1>
-<p>Below work hours data is from {{week_begining|date:"F d, Y"}} to {{week_ending|date:"F d, Y"}} </p>
-
-	<table border="4">
-		<thead>
-			<tr>
-				<th>Weekday</th>
-				<th>Total-Hours</th>
-			</tr>
-		</thead>
-		{% for day in timesheet %}
-		<tr>
-			<th>{{ day.date|date:"l" }}</th>
-			<td>{{ day.hours|default_if_none:"0" }}</td>
-		</tr>
-		{% endfor %}
-		<tfoot>
-			<tr>
-				<th>Total</th>
-				<td>{{ week_hours|default_if_none:"0" }}</td>
-			</tr>
-		</tfoot>
-	</table>
+    <div class="content-section">
+    <form action="/portal/" method="post" id="form">
+    {% csrf_token %}
+        <fieldset class ="form-group">
+				<legend class="border-bottom mb-4">View TimeSheet Data</legend>
+    <div>
+        <label>
+            {{ form.year.label}}<span class="asteriskField">*</span>
+        </label>{{ form.year }}
+    </div>
+    <div>
+        <label>
+            {{ form.week.label}}<span class="asteriskField">*</span>
+        </label>{{ form.week }}
+    </div>
+            </fieldset>
+        <p></p>
+    <div class="form-group">
+		<button class="btn btn-outline-info" type="submit"> Submit</button>
+    </div>
+    </form>
+    </div>
+    <p> </p>
+    <p id="fromto" style="display : none;"> </p
+ <div id="report" style="display : none;">
+ </div>
 {% endblock %}
 
+{% block js %}
+    <script>
+    $(function () {
+        $("#form").submit(function () {
+            let data = $('#form').serialize();
+            let url = $(this).attr('action');
+            $.post(url,data,function (resp) {
+                $('#form input[type="number"]').val(' ');
+                $('#report').text(' ');
+                $('#fromto').text(' ');
+                var context = resp.context;
+                function fromToData(context) {
+                        result = " Below work hours data is from  " + context['week_begining'] + "  to  " + context['week_ending'] +"\n";
+                        $('#fromto').append(result);
+                        $('#fromto').show();
+                }
+                var obj = resp.timesheet;
+                function showObject(obj) {
+                        var html = '<table border="4">';
+                        html += '<tr>';
+                        html += '<th>' + 'DATE' + '</th>';
+                        html += '<th>' + 'JOB TITLE' + '</th>';
+                        html += '<th>' + 'HOURS' + '</th>';
+                        html += '</tr>';
+                        for (var i in obj) {
+                            html += '<tr>';
+                            html += '<td>' + obj[i].date + '</td>';
+                            html += '<td>' + obj[i].jobs + '</td>';
+                            html += '<td>' + obj[i].hours + '</td>';
+                            html += '</tr>';
+                        }
+                        html += '</table>';
+                        $('#report').append(html);
+                        $('#report').show();
+                    }
+                if (obj.length > 0) {
+                    fromToData(context);
+                    showObject(obj);
+                } else {
+                    $('#report').append("No Timesheet Records");
+                }
+            });
+            return false;
+        });
+    })
+    </script>
+{% endblock js%}

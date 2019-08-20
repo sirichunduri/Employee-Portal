@@ -1,0 +1,47 @@
+{% extends "portal/base.html" %}
+{% block content %}
+	{% if user.is_authenticated %}
+        <div class="content-section">
+		<h1 id = 'fullName'> Hi {{name}} </h1>
+
+        <p></p>
+    <form action="/savename/" method="post" id="form">
+    {% csrf_token %}
+        <fieldset class ="form-group">
+            <small class="text-muted"> Change your full name here: </small>
+        <div >
+        <label>
+            {{form.First_name.label}}<span class="asteriskField">*</span>
+        </label> {{ form.First_name }}
+    </div>
+    <div>
+        <label>
+            {{form.Last_name.label}}<span class="asteriskField">*</span>
+        </label>{{ form.Last_name }}
+    </div>
+        </fieldset>
+        <p></p>
+    <div class="form-group">
+		<button class="btn btn-outline-info" type="submit"> Submit</button>
+    </div>
+    </form>
+        </div>
+    {% endif %}
+{% endblock content%}
+{% block js %}
+    <script>
+    $(function () {
+        $("#form").submit(function () {
+            let data = $('#form').serialize();
+            let url = $(this).attr('action');
+            $.post(url,data,function (resp) {
+                //alert(resp.data);
+                $('#form input[type="text"]').val(' ');
+                $('#fullName').text('Hello '+ resp.name);
+                console.log(resp.name)
+            });
+            return false;
+        });
+    })
+    </script>
+{% endblock js%}

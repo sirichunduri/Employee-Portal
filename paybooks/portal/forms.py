@@ -1,7 +1,6 @@
 from django import forms
-from .models import Timesheet,Name
-from django.contrib.auth.models import User
-
+from .models import Timesheet
+from datetime import datetime
 
 class add_data(forms.ModelForm):
     date = forms.DateField()
@@ -13,10 +12,11 @@ class add_data(forms.ModelForm):
         fields = ['date', 'job', 'hours']
 
 
-class addName(forms.ModelForm):
-    First_name = forms.CharField(max_length=100)
-    Last_name = forms.CharField(max_length=100)
+class addName(forms.Form):
+    First_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    Last_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
-    class Meta:
-        model = Name
-        fields = ['First_name', 'Last_name']
+class reportData(forms.Form):
+    year = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), min_value=2000, max_value=datetime.now().year)
+    week = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), min_value=1, max_value=52)
+

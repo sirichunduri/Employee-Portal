@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 	<div class="content-section">
-		<form method="POST">
+		<form action="/data/" method="POST" id="form">
 			{% csrf_token %}
 			<fieldset class ="form-group">
 				<legend class="border-bottom mb-4">Add TimeSheet Data</legend>
@@ -13,3 +13,18 @@
 			</div>
 		</form>
 {% endblock content%}
+{% block js %}
+    <script>
+    $(function () {
+        $("#form").submit(function () {
+            let data = $('#form').serialize();
+            let url = $(this).attr('action');
+            $.post(url,data,function (resp) {
+                alert(resp.data);
+                $("#form").trigger('reset');
+            });
+            return false;
+        });
+    })
+    </script>
+{% endblock js%}
