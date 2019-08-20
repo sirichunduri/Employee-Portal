@@ -41,7 +41,7 @@
                 $('#fromto').text(' ');
                 var context = resp.context;
                 function fromToData(context) {
-                        result = " Below work hours data is from  " + context['week_begining'] + "  to  " + context['week_ending'] +"\n";
+                        result = " Below work hours data is from  " + "<b>"+ context['week_begining'] + "</b>"+ "  to  " + "<b>"+ context['week_ending'] + "</b>"+ "<br>" +  "<br>" + "<b>Total Work hours:</b> " + context['week_hours'] ;
                         $('#fromto').append(result);
                         $('#fromto').show();
                 }
@@ -55,9 +55,9 @@
                         html += '</tr>';
                         for (var i in obj) {
                             html += '<tr>';
-                            html += '<td>' + obj[i].date + '</td>';
-                            html += '<td>' + obj[i].jobs + '</td>';
-                            html += '<td>' + obj[i].hours + '</td>';
+                            html += '<td align="center">' + obj[i].date + '</td>';
+                            html += '<td align="center">' + obj[i].jobs + '</td>';
+                            html += '<td align="center">' + obj[i].hours + '</td>';
                             html += '</tr>';
                         }
                         html += '</table>';

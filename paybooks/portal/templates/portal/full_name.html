@@ -7,7 +7,7 @@
     <form action="/savename/" method="post" id="form">
     {% csrf_token %}
         <fieldset class ="form-group">
-            <small class="text-muted"> Change your full name here: </small>
+            <small class="text-muted"> Edit your full name: </small>
         <div >
         <label>
             {{form.First_name.label}}<span class="asteriskField">*</span>
@@ -36,7 +36,6 @@
             $.post(url,data,function (resp) {
                 $('#form input[type="text"]').val(' ');
                 $('#fullName').text('Hello '+ resp.name);
-                console.log(resp.name)
             });
             return false;
         });

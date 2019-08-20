@@ -2,9 +2,7 @@ from django.shortcuts import render, redirect, render_to_response
 import time
 from django.contrib.auth.models import User
 from django.http import Http404, JsonResponse
-from django.db.models import Sum
 from .forms import *
-
 
 
 def home(request):
@@ -22,7 +20,8 @@ def report_data(request):
         if form.is_valid():
             data = form.cleaned_data
             try:
-                week_begining = datetime.date(*time.strptime(str(data['year']) + '-0-' + str(data['week']), '%Y-%w-%U')[:3])
+                week_begining = datetime.date(
+                    *time.strptime(str(data['year']) + '-0-' + str(data['week']), '%Y-%w-%U')[:3])
                 week_ending = week_begining + datetime.timedelta(days=7)
             except ValueError:
                 raise Http404
@@ -30,28 +29,28 @@ def report_data(request):
                 'date',
                 'time')
             timesheet = []
+            week_hours = 0
             date = week_begining
             while date <= week_ending:
                 date_queryset = queryset.filter(date=date)
-                print(date_queryset)
                 for i in date_queryset:
                     timesheet += [{
                         'date': date,
                         'jobs': i.job,
                         'hours': i.hours,
                     }, ]
+                    week_hours += i.hours
                 date = date + datetime.timedelta(days=1)
             context = {
                 'week_begining': week_begining,
                 'week_ending': week_ending,
+                'week_hours': week_hours
             }
-            print(timesheet)
-            return JsonResponse({'error': False, 'context': context,'timesheet': timesheet})
+            return JsonResponse({'error': False, 'context': context, 'timesheet': timesheet})
 
     else:
         form = reportData()
     return render(request, 'portal/report_data.html', {'form': form})
-
 
 
 def get_data(request):
@@ -70,7 +69,7 @@ def get_data(request):
                 a = form.save(commit=False)
                 a.employee = request.user
                 a.save()
-            return JsonResponse({'error': False, 'data': 'Success'}, )
+            return JsonResponse({'error': False, 'data': 'Data Inserted!!'}, )
     else:
         form = add_data()
     return render(request, 'portal/add_data.html', {'form': form})
@@ -94,7 +93,7 @@ def post_name(request):
             name_obj.last_name = data['Last_name']
             name_obj.save()
             name = data['First_name'] + ' ' + data['Last_name']
-            return JsonResponse({'error': False, 'data': 'Success', 'name' : name}, )
+            return JsonResponse({'error': False, 'name': name}, )
     else:
         form = addName()
-        return render(request, 'portal/full_name.html', {'form': form,'name':name})
+        return render(request, 'portal/full_name.html', {'form': form, 'name': name})
