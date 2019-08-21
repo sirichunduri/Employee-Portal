@@ -23,6 +23,9 @@
             {% if user.is_authenticated %}
             <li> <a class="navbar-brand mr-12" href="{% url 'savename' %}">Profile</a></li>
             {% endif %}
+            {% if user.is_superuser %}
+            <li> <a class="navbar-brand mr-12" href="{% url 'jobtitle' %}">Add_JobTitle</a></li>
+            {% endif %}
         </ul>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">

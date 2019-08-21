@@ -1,16 +1,12 @@
 from django.shortcuts import render, redirect, render_to_response
 import time
 from django.contrib.auth.models import User
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponse
 from .forms import *
-
+from .models import *
 
 def home(request):
     return render(request, 'portal/home.html')
-
-
-def saved_data(request):
-    return render(request, 'portal/saved.html')
 
 
 def report_data(request):
@@ -66,7 +62,7 @@ def get_data(request):
                     user_data.hours = data['hours']
                     user_data.save()
             except:
-                a = form.save(commit=False)
+                a = Timesheet(**data)
                 a.employee = request.user
                 a.save()
             return JsonResponse({'error': False, 'data': 'Data Inserted!!'}, )
@@ -97,3 +93,19 @@ def post_name(request):
     else:
         form = addName()
         return render(request, 'portal/full_name.html', {'form': form, 'name': name})
+
+
+def jobtitle(request):
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            form = jobTitle(request.POST)
+            if form.is_valid():
+                data = form.cleaned_data
+                obj = JobTitle(**data)
+                obj.save()
+                return JsonResponse({'error': False, 'data': "Title inserted"}, )
+        else:
+            form = jobTitle()
+            return render(request, 'portal/jobtitle.html', {'form': form})
+    else:
+        return HttpResponse('401 Unauthorized', status=401)

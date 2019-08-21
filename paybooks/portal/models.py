@@ -16,3 +16,6 @@ class Timesheet(models.Model):
 
     def __unicode__(self):
         return u"%s %s - %s" % (self.person.first_name, self.person.last_name, self.date)
+
+class JobTitle(models.Model):
+    Title = models.CharField(max_length=100)
