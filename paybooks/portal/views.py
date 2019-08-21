@@ -1,6 +1,5 @@
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render
 import time
-from django.contrib.auth.models import User
 from django.http import Http404, JsonResponse, HttpResponse
 from .forms import *
 from .models import *

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class Timesheet(models.Model):
     job = models.CharField(max_length=100)
-    date = models.DateField('date')
+    date = models.DateField()
     time = models.DateTimeField(default=timezone.now)
     employee = models.ForeignKey(User, on_delete=models.CASCADE)
     hours = models.IntegerField()
