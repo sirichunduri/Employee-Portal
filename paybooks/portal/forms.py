@@ -4,10 +4,11 @@ import datetime
 
 
 class add_data(forms.Form):
-    date = forms.DateField(widget=forms.DateInput())
+    date = forms.DateField()
     job_choice = [('', 'Select JobTitle')]+[(i['Title'], i['Title']) for i in JobTitle.objects.values('Title').distinct()]
     job = forms.ChoiceField(choices=job_choice, widget=forms.Select(attrs={'class':'form-control'}))
-    #job = forms.ModelChoiceField(queryset=JobTitle.objects.values_list("Title", flat=True), empty_label="Select JobTitle", widget=forms.Select(attrs={'class':'form-control'}))
+    #job = forms.ModelChoiceField(queryset=JobTitle.objects.values_list("Title", flat=True),
+    # empty_label="Select JobTitle", widget=forms.Select(attrs={'class':'form-control'}))
     hours = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
 class addName(forms.Form):
@@ -23,3 +24,8 @@ class reportData(forms.Form):
 
 class jobTitle(forms.Form):
     Title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class apply_leave(forms.Form):
+    From_Date = forms.DateField()
+    To_Date = forms.DateField()

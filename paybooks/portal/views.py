@@ -56,7 +56,9 @@ def get_data(request):
             get_user = User.objects.get(username=request.user)
             try:
                 user_data = Timesheet.objects.get(employee_id=get_user, date=data['date'])
-                if user_data:
+                if user_data.job == "Leave":
+                    return JsonResponse({'data': 'Cancel Leave to insert data!!'}, )
+                else:
                     user_data.job = data['job']
                     user_data.hours = data['hours']
                     user_data.save()
@@ -108,3 +110,47 @@ def jobtitle(request):
             return render(request, 'portal/jobtitle.html', {'form': form})
     else:
         return HttpResponse('401 Unauthorized', status=401)
+
+
+def applyLeave(request):
+    get_user = User.objects.get(username=request.user)
+    if request.method == 'POST' and 'apply' in request.POST:
+        form = apply_leave(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['From_Date'] <= data['To_Date']:
+                start = data['From_Date']
+                while start <= data['To_Date']:
+                    try:
+                        user_data = Timesheet.objects.get(employee_id=get_user, date=start)
+                        user_data.job = "Leave"
+                        user_data.hours = 9
+                        user_data.save()
+                    except:
+                        obj = Timesheet(employee=request.user, date=start, job="Leave", hours=9)
+                        obj.save()
+                    start = start + datetime.timedelta(days=1)
+            return render(request, 'portal/leave.html')
+    elif request.method == 'POST' and 'cancel' in request.POST:
+        form = apply_leave(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['From_Date'] <= data['To_Date']:
+                start = data['From_Date']
+                while start <= data['To_Date']:
+                    try:
+                        user_data = Timesheet.objects.get(employee_id=get_user, date=start, job='Leave')
+                    except:
+                        return HttpResponse('No leave records available for one or more days in provided input')
+                    start = start + datetime.timedelta(days=1)
+                start = data['From_Date']
+                while start <= data['To_Date']:
+                    user_data = Timesheet.objects.get(employee_id=get_user, date=start, job='Leave')
+                    user_data.job = "Cancelled Leave"
+                    user_data.hours = 0
+                    user_data.save()
+                    start = start + datetime.timedelta(days=1)
+            return render(request, 'portal/leave.html')
+    else:
+        form = apply_leave()
+        return render(request, 'portal/apply_leave.html', {'form': form})

@@ -7,5 +7,6 @@ urlpatterns = [
     path('data/', views.get_data, name='get-data'),
     path('savename/', views.post_name, name='savename'),
     path('jobtitle/', views.jobtitle, name='jobtitle'),
+    path('applyLeave/', views.applyLeave, name='applyLeave'),
 
 ]
