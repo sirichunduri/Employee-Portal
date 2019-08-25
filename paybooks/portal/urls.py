@@ -8,5 +8,6 @@ urlpatterns = [
     path('savename/', views.post_name, name='savename'),
     path('jobtitle/', views.jobtitle, name='jobtitle'),
     path('applyLeave/', views.applyLeave, name='applyLeave'),
+    path('applyLeave/<action>', views.applyLeave, name='applyLeave'),
 
 ]

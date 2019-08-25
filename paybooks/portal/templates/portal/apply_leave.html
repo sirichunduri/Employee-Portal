@@ -1,7 +1,7 @@
 {% extends "portal/base.html" %}
 {% block content %}
         <div class="content-section">
-    <form action="/applyLeave/" method="post" id="form">
+    <form  method="post" id="form">
     {% csrf_token %}
         <fieldset class ="form-group">
             <legend class="border-bottom mb-4">Leave Management</legend>
@@ -11,10 +11,34 @@
         </fieldset>
         <p></p>
     <div class="form-group"   style="text-align: center">
-		<button class="btn btn-outline-info" type="submit" name="apply"> Apply</button>
+		<button class="btn btn-outline-info" id='apply' type="submit" name="apply"> Apply</button>
         &nbsp;
-        <button class="btn btn-outline-info" type="submit" name="cancel"> Cancel</button>
+        <button class="btn btn-outline-info"  id='cancel' type="submit" name="cancel"> Cancel</button>
     </div>
     </form>
         </div>
 {% endblock content%}
+
+{% block js %}
+    <script>
+    $(function () {
+        $("#apply").click(function () {
+            let data = $('#form').serialize();
+            console.log(data);
+            $.post('/applyLeave/apply',data,function (resp) {
+                alert(resp.data);
+            });
+            return false;
+        });
+
+        $("#cancel").click(function () {
+            let data = $('#form').serialize();
+            console.log(data);
+            $.post('/applyLeave/cancel',data,function (resp) {
+                alert(resp.data);
+            });
+            return false;
+        });
+    })
+    </script>
+{% endblock js%}
