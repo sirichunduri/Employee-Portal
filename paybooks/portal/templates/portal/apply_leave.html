@@ -24,18 +24,18 @@
     $(function () {
         $("#apply").click(function () {
             let data = $('#form').serialize();
-            console.log(data);
             $.post('/applyLeave/apply',data,function (resp) {
                 alert(resp.data);
+                $("#form").trigger('reset');
             });
             return false;
         });
 
         $("#cancel").click(function () {
             let data = $('#form').serialize();
-            console.log(data);
             $.post('/applyLeave/cancel',data,function (resp) {
                 alert(resp.data);
+                $("#form").trigger('reset');
             });
             return false;
         });
