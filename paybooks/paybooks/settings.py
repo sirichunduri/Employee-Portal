@@ -26,6 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -78,8 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'paybooks',
-        'USER': 'paybooks_user',
-        'PASSWORD': 'paybooks',
+        'USER': os.environ.get('paybooks'),
+        'PASSWORD': os.environ.get('paybooks_pass'),
         'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
         'PORT': '',
     }
@@ -123,3 +124,9 @@ STATIC_URL = '/static/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'portal-home'
 LOGIN_URL = 'login'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('email_id')
+EMAIL_HOST_PASSWORD = os.environ.get('email_pass')

@@ -3,6 +3,8 @@ import time
 from django.http import Http404, JsonResponse, HttpResponse
 from .forms import *
 from .models import *
+from django.conf import settings
+from django.core.mail import EmailMessage
 
 def home(request):
     return render(request, 'portal/home.html')
@@ -114,6 +116,7 @@ def jobtitle(request):
 
 def applyLeave(request, action=None):
     get_user = User.objects.get(username=request.user)
+    mail_id=get_user.email
     if request.method == 'POST' and action == "apply":
         form = apply_leave(request.POST)
         if form.is_valid():
@@ -130,6 +133,11 @@ def applyLeave(request, action=None):
                         obj = Timesheet(employee=request.user, date=start, job="Leave", hours=9)
                         obj.save()
                     start = start + datetime.timedelta(days=1)
+            email = EmailMessage( 'Leave Applied from '+ str(data['From_Date'])+' to '+str(data['To_Date'])+' by '+ str(get_user),
+                                  'Hello Admin \n \n Please Approve the leave requests, by logging to Admin portal -> Leave Monitor'
+                                  ' \n \n Best Regards, \n Admim Management Team',
+                                      settings.EMAIL_HOST_USER, to=['chundurimounica@gmail.com'], cc=[mail_id], reply_to=['chundurimounica@gmail.com'], )
+            email.send()
             return JsonResponse({'data': 'Request Registered!!'})
         else:
             return JsonResponse({'data': 'Please enter valid input!!'})
@@ -152,6 +160,13 @@ def applyLeave(request, action=None):
                     user_data.hours = 0
                     user_data.save()
                     start = start + datetime.timedelta(days=1)
+            email = EmailMessage(
+                'Leave Cancelled from ' + str(data['From_Date']) + ' to ' + str(data['To_Date']) + ' by ' + str(get_user),
+                'Hello Admin \n \n Please Approve the Cancel requests, by logging to Admin portal -> Leave Monitor '
+                '\n \n Best Regards, \n Admim Management Team',
+                settings.EMAIL_HOST_USER, to=['chundurimounica@gmail.com'], cc=[mail_id],
+                reply_to=['chundurimounica@gmail.com'], )
+            email.send()
             return JsonResponse({'data': 'Request Registered!!'})
         else:
             return JsonResponse({'data': 'Please enter valid input!!'})
