@@ -9,6 +9,7 @@ class Timesheet(models.Model):
     time = models.DateTimeField(default=timezone.now)
     employee = models.ForeignKey(User, on_delete=models.CASCADE)
     hours = models.IntegerField()
+    is_approved = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'timesheets'

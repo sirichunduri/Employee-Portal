@@ -1,0 +1,50 @@
+{% extends "portal/base.html" %}
+{% block content %}
+        <div class="content-section">
+    <form  method="post" id="form">
+    {% csrf_token %}
+        <fieldset class ="form-group">
+            <legend class="border-bottom mb-4">Leave Monitor</legend>
+        <div >
+        {% if object_list %}
+        <table border="4">
+            <tr>
+                <th align="center">Date</th>
+                <th align="center">User</th>
+                <th align="center">approve</th>
+            </tr>
+            {% for item in object_list %}
+                <tr>
+                <td align="center">{{ item.1 }}</td>
+                <td align="center">{{ item.2 }}</td>
+                <td align="center"> <input type="checkbox" value="{{item.0}}" name="approve"></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+        </fieldset>
+        <p></p>
+    <div class="form-group" >
+		<button class="btn btn-outline-info"  type="submit" name="submit"> Submit</button>
+    </div>
+    </form>
+        {% else %}
+            <p> Cool !! No Pending Leave Requests !!</p>
+        {% endif %}
+        </div>
+{% endblock %}
+{% block js %}
+    <script>
+    $(function () {
+        $("#form").submit(function () {
+            let data = $('#form').serialize();
+            let url = $(this).attr('action');
+            $.post(url,data,function (resp) {
+                alert(resp.data);
+               location.reload()
+            });
+            return false;
+        });
+    })
+    </script>
+{% endblock js%}

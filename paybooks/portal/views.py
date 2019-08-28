@@ -159,3 +159,21 @@ def applyLeave(request, action=None):
         form = apply_leave()
         return render(request, 'portal/apply_leave.html', {'form': form})
 
+
+def approveleave(request):
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            approve = request.POST.getlist('approve')
+            for i in approve:
+                data = Timesheet.objects.get(id=i)
+                data.is_approved = True
+                data.save()
+            return JsonResponse({'data': "Approved Leave"}, )
+        else:
+            object_list = Timesheet.objects.filter(job='Leave',is_approved=False).values_list('id','date', 'employee_id__username')
+            context = {
+                'object_list': object_list,
+            }
+            return render(request, 'portal/approve_leave.html', context,)
+    else:
+        return HttpResponse('401 Unauthorized', status=401)
