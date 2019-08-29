@@ -155,7 +155,7 @@ def applyLeave(request, action=None):
                     user_data.hours = 0
                     user_data.save()
                     start = start + datetime.timedelta(days=1)
-            leave_signal.send(sender=request.user, apply='cancel', from_date=str(data['From_Date']),
+            leave_signal.send(sender=request.user, apply='cancelled', from_date=str(data['From_Date']),
                               to_date=str(data['To_Date']))
             return JsonResponse({'data': 'Request Registered!!'})
         else:
