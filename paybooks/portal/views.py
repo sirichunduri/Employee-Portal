@@ -1,9 +1,27 @@
 from django.shortcuts import render
 import time
 from django.http import Http404, JsonResponse, HttpResponse
+from rest_framework.views import APIView
 from .forms import *
 from .models import *
 from .signals import *
+from rest_framework import viewsets
+from rest_framework.parsers import JSONParser
+from .serializers import EmployeeSerializer,TimesheetSerializer
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework import mixins
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import views
+from rest_framework.authtoken.models import Token
+from .serializers import LoginSerializer
+from django.contrib.auth import login as django_login, logout as django_logout
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 def home(request):
     return render(request, 'portal/home.html')
@@ -183,3 +201,140 @@ def approveleave(request):
             return render(request, 'portal/approve_leave.html', context,)
     else:
         return HttpResponse('401 Unauthorized', status=401)
+
+
+class EmployeeListView(generics.GenericAPIView,
+                       mixins.ListModelMixin,
+                       mixins.CreateModelMixin,
+                       mixins.RetrieveModelMixin,
+                       mixins.UpdateModelMixin,
+                       mixins.DestroyModelMixin):
+    serializer_class = TimesheetSerializer
+    queryset = Timesheet.objects.all()
+    lookup_field = 'id'
+    authentication_classes = [TokenAuthentication,SessionAuthentication,BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,id=None):
+        if id:
+            return self.retrieve(request,id)
+        return self.list(request)
+
+    def post(self,request):
+        return self.create(request)
+
+    def perform_create(self, serializer):
+        serializer.save(employee=self.request.user)
+
+    def put(self, request, id=None):
+        return self.create(request,id)
+
+    def perform_update(self,serializer):
+        serializer.save(created_by=self.request.user)
+
+    def delete(self,request,id=None):
+        return self.destroy(request,id)
+
+
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = EmployeeSerializer
+
+class EmployeeAPIView(APIView):
+    def get(self,request):
+        q = Timesheet.objects.all()
+        serialized = TimesheetSerializer(q, many=True)
+        return Response(serialized.data, status=200)
+    def post(self,request):
+        data = request.data
+        serializer = TimesheetSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+class EmployeeDetailView(APIView):
+    def get_object(self,id):
+        try:
+            return Timesheet.objects.get(id=id)
+        except Timesheet.DoesNotExist as e:
+            return Response({"error": "Given timesheet object not found"}, status=404)
+    def get(self,request,id=None):
+        instance = self.get_object(id)
+        serialized = TimesheetSerializer(instance)
+        return Response(serialized.data)
+    def put(self,request,id=None):
+        instance = self.get_object(id)
+        serialized = TimesheetSerializer(instance)
+        if serialized.is_valid():
+            serialized.save()
+            return Response(serialized.data, status=200)
+        return Response(serialized.errors, status=400)
+    def delete(self,request,id=None):
+        instance = self.get_object(id)
+        instance.delete()
+        return HttpResponse(status=204)
+
+@csrf_exempt
+def timesheet_api(request):
+    if request.method == "GET":
+        q=Timesheet.objects.all()
+        serialized = TimesheetSerializer(q,many=True)
+        return JsonResponse(serialized.data,safe=False)
+    elif request.method == "POST":
+        obj_parser=JSONParser()
+        data = obj_parser.parse(request)
+        serializer =TimesheetSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data,status=201)
+        return JsonResponse(serializer.errors,status=400)
+
+@csrf_exempt
+def timesheet_details(request,id):
+    try:
+        instance = Timesheet.objects.get(id=id)
+    except Timesheet.DoesNotExist as e:
+        return JsonResponse({"error":"Given timesheet object not found"},status=404)
+
+    if request.method == "GET":
+        serialized = TimesheetSerializer(instance)
+        return JsonResponse(serialized.data)
+    elif request.method == "POST":
+        obj_parser=JSONParser()
+        data = obj_parser.parse(request)
+        serializer =TimesheetSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data,status=201)
+        return JsonResponse(serializer.errors,status=400)
+    elif request.method == "PUT":
+        obj_parser = JSONParser()
+        data = obj_parser.parse(request)
+        serializer = TimesheetSerializer(instance,data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+    elif request.method == "DELETE":
+        instance.delete()
+        return HttpResponse(status=204)
+
+class LoginView(views.APIView):
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        django_login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key}, status=200)
+
+
+class LogoutView(views.APIView):
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request):
+        django_logout(request)
+        return Response(status=204)
